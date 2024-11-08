@@ -1,0 +1,36 @@
+{
+    "OptionType": {
+        "TEXT": {
+            "value": "1",
+            "comment": "Plain text"
+        },
+        "SPACE": {
+            "value": "2",
+            "comment": "A paragraph-type gap rendered in the menu"
+        },
+        "SCROLL": {
+            "value": "3",
+            "comment": "A slider-bar for numeric values"
+        },
+        "BOOLEAN": {
+            "value": "4",
+            "comment": "A boolean (true or false)."
+        },
+        "NUMBER": {
+            "vakue": "5",
+            "comment": "A numeric value"
+        },
+        "KEYBIND_KEYBOARD": {
+            "value": "6",
+            "comment": "A keybind for keyboards"
+        },
+        "KEYBIND_CONTROLLER": {
+            "value": "7",
+            "comment": "A keybind for controllers"
+        },
+        "TITLE": {
+            "value": "8",
+            "comment": "Heading-style text"
+        }
+    }
+}
