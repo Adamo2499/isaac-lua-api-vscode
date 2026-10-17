@@ -19,6 +19,7 @@ const LUA_EXTENSION_ID = "sumneko.lua";
 const VANILLA_LUA_LIBRARY = path.join("out", "emmylua", "vanilla");
 const REPENTOGON_LUA_LIBRARY = path.join("out", "emmylua", "repentogon");
 const STAGEAPI_LUA_LIBRARY = path.join("out", "emmylua", "stageapi");
+const EID_LUA_LIBRARY = path.join("out", "emmylua", "eid");
 
 export function activate(context: vscode.ExtensionContext) {
     const state = getState(context);
@@ -87,6 +88,7 @@ function onActivate(context: vscode.ExtensionContext) {
         setExternalLibrary(luaCfg, context, VANILLA_LUA_LIBRARY, !config.repentogonEnabled);
         setExternalLibrary(luaCfg, context, REPENTOGON_LUA_LIBRARY, config.repentogonEnabled);
         setExternalLibrary(luaCfg, context, STAGEAPI_LUA_LIBRARY, config.stageAPISupportEnabled);
+        setExternalLibrary(luaCfg, context, EID_LUA_LIBRARY, config.eidSupportEnabled);
         setDefinedGlobals(luaCfg, true, config.repentogonEnabled);
         setPlugin(luaCfg, context, config.pluginEnabled);
         setPluginArgs(luaCfg, getPluginArgs(config));
@@ -116,6 +118,7 @@ function onDeactivate(context: vscode.ExtensionContext) {
             setExternalLibrary(luaCfg, context, VANILLA_LUA_LIBRARY, false);
             setExternalLibrary(luaCfg, context, REPENTOGON_LUA_LIBRARY, false);
             setExternalLibrary(luaCfg, context, STAGEAPI_LUA_LIBRARY, false);
+            setExternalLibrary(luaCfg, context, EID_LUA_LIBRARY, false);
             setPlugin(luaCfg, context, false);
             setPluginArgs(luaCfg, {});
             return luaCfg;
@@ -133,7 +136,8 @@ async function onConfigChange(context: vscode.ExtensionContext, event: vscode.Co
     const repentogonEnabledChanged = event.affectsConfiguration("boi-lua.repentogonEnabled");
     const pluginEnabledChanged = event.affectsConfiguration("boi-lua.pluginEnabled");
     const enableStageAPISupportChanged = event.affectsConfiguration("boi-lua.stageAPISupportEnabled");
-    const anyChanged = [repentogonEnabledChanged, pluginEnabledChanged, enableStageAPISupportChanged].some(x => x);
+    const enableEIDSupportChanged = event.affectsConfiguration("boi-lua.eidSupportEnabled");
+    const anyChanged = [repentogonEnabledChanged, pluginEnabledChanged, enableStageAPISupportChanged, enableEIDSupportChanged].some(x => x);
 
 
     if (anyChanged) {
@@ -153,6 +157,9 @@ async function onConfigChange(context: vscode.ExtensionContext, event: vscode.Co
             }
             if (enableStageAPISupportChanged) {
                 setExternalLibrary(luaCfg, context, STAGEAPI_LUA_LIBRARY, config.stageAPISupportEnabled);
+            }
+            if (enableEIDSupportChanged) {
+                setExternalLibrary(luaCfg, context, EID_LUA_LIBRARY, config.eidSupportEnabled);
             }
             return luaCfg;
         });

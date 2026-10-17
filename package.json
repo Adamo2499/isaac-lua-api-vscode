@@ -60,6 +60,11 @@
                     "default": true,
                     "description": "Enable Repentogon API support"
                 },
+                "boi-lua.eidSupportEnabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable External Item Descriptions (EID) API support"
+                },
                 "boi-lua.pluginEnabled": {
                     "type": "boolean",
                     "default": true,

@@ -1,0 +1,45 @@
+{
+  "EID_LanguageCode": {
+    "BULGARIAN": "bul",
+    "CZECH": "cs_cz",
+    "GERMAN": "de",
+    "GREEK": "el_gr",
+    "ENGLISH": "en_us",
+    "SPANISH": "spa",
+    "FRENCH": "fr",
+    "ITALIAN": "it",
+    "JAPANESE": "ja_jp",
+    "KOREAN": "ko_kr",
+    "DUTCH": "nl_nl",
+    "POLISH": "pl",
+    "BRASILIAN_PORTUGUESE": "pt_br",
+    "PORTUGUESE": "pt",
+    "ROMANIAN": "ro_ro",
+    "RUSSIAN": "ru",
+    "TURKISH": "tr_tr",
+    "UKRAINIAN": "uk_ua",
+    "VIETNAMESE": "vi",
+    "SIMPLIFIED_CHINESE": "zh_cn"
+  },
+  "EID_PillClass": [ "3-", "2-", "1-", "0", "1+", "2+", "3+" ],
+  "EID_TypeVariantAlias": {
+    "COLLECTIBLE": "collectible",
+    "COLLECTIBLES": "collectibles",
+    "TRINKET": "trinket",
+    "TRINKETS": "trinkets",
+    "CARD": "card",
+    "CARDS": "cards",
+    "PILL": "pill",
+    "PILLS": "pills",
+    "HORSEPILLS": "horsepills",
+    "HORSEPILL": "horsepill",
+    "DICE": "dice",
+    "ENTITY": "entity"
+  },
+  "EID_Dimension": {
+    "NORMAL_DIMENSION": 0,
+    "SECONDARY_DIMENSION": 1,
+    "DEATH_CERTIFICATE_DIMENSION": 2
+  },
+  "EID_Anchor": [ "TOP", "BOTTOM", "LEFT", "RIGHT" ]
+}

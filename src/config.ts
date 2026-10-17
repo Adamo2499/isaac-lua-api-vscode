@@ -4,6 +4,7 @@ import { Constants } from './constants';
 interface Config {
     get workspaceSettings(): boolean;
     get repentogonEnabled(): boolean;
+    get eidSupportEnabled(): boolean;
     get pluginEnabled(): boolean;
     get stageAPISupportEnabled(): boolean;
     get callbackFunctionCompletionEnabled(): boolean;
@@ -21,6 +22,10 @@ class ConfigImpl implements Config {
 
     get repentogonEnabled(): boolean {
         return this._config.get("repentogonEnabled", false);
+    }
+
+    get eidSupportEnabled(): boolean {
+        return this._config.get("eidSupportEnabled", false);
     }
 
     get pluginEnabled(): boolean {

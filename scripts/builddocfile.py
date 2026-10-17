@@ -24,6 +24,10 @@ class Configuration(TypedDict, total=False):
     sourcedirs: list[Path]
     enumfiles: list[Path]
     callbackfiles: list[Path]
+    quote_enum_strings: bool
+    """When true, string enum values are emitted as quoted Lua strings.
+    Use for enums whose values are actual strings (e.g. EID). Leave false
+    when the values are Lua expressions/numbers stored as JSON strings."""
     
 # not all callback-related fields are used (mainly param comments),
 # keep in case we find a way later
@@ -75,6 +79,18 @@ CONFIGURATIONS: list[Configuration] = [
             DOCS_DIR / "enums" / "callbacks" / "vanilla.json",
             DOCS_DIR / "enums" / "callbacks" / "repentogon.json",
         ],
+    ),
+    Configuration(
+        name="EID",
+        fname=Path("eid") / "eidapi.lua",
+        sourcedirs=[
+            DOCS_DIR / "eid"
+        ],
+        enumfiles=[
+            DOCS_DIR / "enums" / "eid.json",
+        ],
+        callbackfiles=[],
+        quote_enum_strings=True,
     )
 ]
 
@@ -124,16 +140,20 @@ def merge_lua_in_dir(path: str, out: TextIO):
                 out.write(luafile.read())
                 out.write("\n\n")
 
-def create_enums_from_json(json_paths: list[Path], writer: TextIO):
+def create_enums_from_json(json_paths: list[Path], writer: TextIO, quote_strings: bool = False):
     enums = {}
     for json_path in json_paths:
         data = json.loads(json_path.read_text())
         enums = _merge(enums, data, ignore_conflicts=True)
 
     for key in enums:
-        _write_enum(key, enums[key], writer)
+        _write_enum(key, enums[key], writer, quote_strings=quote_strings)
 
-def _write_enum(name: str, enum_dict: dict, writer: TextIO, depth: int = 0):
+def _write_enum(name: str, enum_dict, writer: TextIO, depth: int = 0, quote_strings: bool = False):
+    # A JSON array of values represents a literal-union type alias
+    if type(enum_dict) is list:
+        _write_alias(name, enum_dict, writer, depth)
+        return
     is_parent = False
     for (key, item) in enum_dict.items():
         is_value = _is_enum_dict_value(item)
@@ -148,15 +168,36 @@ def _write_enum(name: str, enum_dict: dict, writer: TextIO, depth: int = 0):
     print(DEPTH_SEP * depth + f"{name} = ""{", file=writer)
     for (key, item) in enum_dict.items():
         if is_parent:
-            _write_enum(key, item, writer, depth + 1)
+            _write_enum(key, item, writer, depth + 1, quote_strings)
         elif type(item) is dict:
-            print(DEPTH_SEP * (depth + 1) + f"{key} = {item['value']}, -- {item['comment']}", file=writer)
+            value = item['value']
+            if quote_strings and type(value) is str:
+                value = f'"{value}"'
+            print(DEPTH_SEP * (depth + 1) + f"{key} = {value}, -- {item['comment']}", file=writer)
         else:
-            print(DEPTH_SEP * (depth + 1) + f"{key} = {item},", file=writer)
+            value = f'"{item}"' if (quote_strings and type(item) is str) else item
+            print(DEPTH_SEP * (depth + 1) + f"{key} = {value},", file=writer)
     if depth == 0:
         print(DEPTH_SEP * depth + "}", file=writer)
     else:
         print(DEPTH_SEP * depth + "},", file=writer)
+
+def _write_alias(name: str, values: list, writer: TextIO, depth: int = 0):
+    """Writes a `---@alias` from a JSON array. Items are either raw literals
+    (string/number) or objects with "value" and optional "comment" fields."""
+    print(DEPTH_SEP * depth + f"---@alias {name}", file=writer)
+    for item in values:
+        if type(item) is dict:
+            value = item["value"]
+            comment = item.get("comment")
+        else:
+            value = item
+            comment = None
+        rendered = f'"{value}"' if type(value) is str else str(value)
+        line = DEPTH_SEP * depth + f"---| {rendered}"
+        if comment:
+            line += f" @ {comment}"
+        print(line, file=writer)
 
 def _is_enum_dict_value(val):
     return (
@@ -336,6 +377,7 @@ def main():
         sourcedirs = config["sourcedirs"]
         enumfiles = config["enumfiles"]
         callbackfiles = config["callbackfiles"]
+        quote_enum_strings = config.get("quote_enum_strings", False)
 
         out_path = EMMYLUA_DIR / fname
         os.makedirs(out_path.parent, exist_ok=True)
@@ -355,7 +397,7 @@ def main():
             create_callbacks_from_json(callbackfiles, f)
 
             f.write('\n\n-- Enums\n')
-            create_enums_from_json(enumfiles, f)
+            create_enums_from_json(enumfiles, f, quote_strings=quote_enum_strings)
         print("Written", out_path)
 
     os.makedirs(PLUGIN_DIR, exist_ok=True)
